@@ -58,7 +58,7 @@ class OrderExecutioner
                 $updateCount,
                 $objectName
             ),
-            __CLASS__.':'.__FUNCTION__
+            self::class.':'.__FUNCTION__
         );
 
         if (0 === $updateCount) {
@@ -71,11 +71,11 @@ class OrderExecutioner
                 $syncOrderDAO->getIdentifiedObjectIds($objectName),
                 $updateObjects
             );
-        } catch (ObjectNotFoundException $e) {
+        } catch (ObjectNotFoundException) {
             DebugLogger::log(
                 MauticSyncDataExchange::NAME,
                 $objectName,
-                __CLASS__.':'.__FUNCTION__
+                self::class.':'.__FUNCTION__
             );
 
             return;
@@ -110,7 +110,7 @@ class OrderExecutioner
                 $createCount,
                 $objectName
             ),
-            __CLASS__.':'.__FUNCTION__
+            self::class.':'.__FUNCTION__
         );
 
         if (0 === $createCount) {
@@ -122,11 +122,11 @@ class OrderExecutioner
                 $this->objectProvider->getObjectByName($objectName),
                 $createObjects
             );
-        } catch (ObjectNotFoundException $e) {
+        } catch (ObjectNotFoundException) {
             DebugLogger::log(
                 MauticSyncDataExchange::NAME,
                 $objectName,
-                __CLASS__.':'.__FUNCTION__
+                self::class.':'.__FUNCTION__
             );
 
             return;

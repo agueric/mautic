@@ -10,11 +10,6 @@ class Organizer
     /**
      * @var array
      */
-    private $records;
-
-    /**
-     * @var array
-     */
     private $leads = [];
 
     /**
@@ -22,10 +17,8 @@ class Organizer
      */
     private $contacts = [];
 
-    public function __construct(array $records)
+    public function __construct(private array $records)
     {
-        $this->records = $records;
-
         $this->organize();
     }
 
@@ -37,10 +30,7 @@ class Organizer
         return $this->leads;
     }
 
-    /**
-     * @return array
-     */
-    public function getLeadIds()
+    public function getLeadIds(): array
     {
         return array_keys($this->leads);
     }
@@ -53,10 +43,7 @@ class Organizer
         return $this->contacts;
     }
 
-    /**
-     * @return array
-     */
-    public function getContactIds()
+    public function getContactIds(): array
     {
         return array_keys($this->contacts);
     }

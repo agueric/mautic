@@ -169,11 +169,9 @@ class ListModel extends FormModel
      * @param string|null $action
      * @param array       $options
      *
-     * @return mixed
-     *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = [])
+    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = []): \Symfony\Component\Form\FormInterface
     {
         if (!$entity instanceof LeadList) {
             throw new MethodNotAllowedHttpException(['LeadList'], 'Entity must be of class LeadList()');
@@ -205,7 +203,7 @@ class ListModel extends FormModel
      *
      * @throws \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
      */
-    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null)
+    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null): ?Event
     {
         if (!$entity instanceof LeadList) {
             throw new MethodNotAllowedHttpException(['LeadList'], 'Entity must be of class LeadList()');
@@ -276,9 +274,7 @@ class ListModel extends FormModel
 
         // Order choices by label.
         foreach ($choices as $key => $choice) {
-            $cmp = function ($a, $b): int {
-                return strcmp($a['label'], $b['label']);
-            };
+            $cmp = fn ($a, $b): int => strcmp($a['label'], $b['label']);
             uasort($choice, $cmp);
             $choices[$key] = $choice;
         }
@@ -344,10 +340,10 @@ class ListModel extends FormModel
         try {
             // Get a count of leads to add
             $newLeadsCount = $this->leadSegmentService->getNewLeadListLeadsCount($leadList, $batchLimiters);
-        } catch (FieldNotFoundException $e) {
+        } catch (FieldNotFoundException) {
             // A field from filter does not exist anymore. Do not rebuild.
             return 0;
-        } catch (SegmentNotFoundException $e) {
+        } catch (SegmentNotFoundException) {
             // A segment from filter does not exist anymore. Do not rebuild.
             return 0;
         }
@@ -365,13 +361,13 @@ class ListModel extends FormModel
         }
 
         // Handle by batches
-        $start = $lastRoundPercentage = $leadsProcessed = 0;
+        $start = $leadsProcessed = 0;
 
         // Try to save some memory
         gc_enable();
 
         if ($leadCount) {
-            $maxCount = ($maxLeads) ? $maxLeads : $leadCount;
+            $maxCount = $maxLeads ?: $leadCount;
 
             if ($output) {
                 $progress = ProgressBarHelper::init($output, $maxCount);
@@ -449,7 +445,7 @@ class ListModel extends FormModel
         $batchLimiters['maxId'] = (int) $orphanLeadsCount[$segmentId]['maxId'];
 
         // Restart batching
-        $start     = $lastRoundPercentage     = 0;
+        $start     = 0;
         $leadCount = $orphanLeadsCount[$segmentId]['count'];
 
         if ($output) {
@@ -457,7 +453,7 @@ class ListModel extends FormModel
         }
 
         if ($leadCount) {
-            $maxCount = ($maxLeads) ? $maxLeads : $leadCount;
+            $maxCount = $maxLeads ?: $leadCount;
 
             if ($output) {
                 $progress = ProgressBarHelper::init($output, $maxCount);
@@ -807,7 +803,7 @@ class ListModel extends FormModel
         }
 
         if ($leadSleepTime < 1) {
-            usleep($leadSleepTime * 1000000);
+            usleep($leadSleepTime * 1_000_000);
         } else {
             sleep($leadSleepTime);
         }
@@ -1166,10 +1162,8 @@ class ListModel extends FormModel
      * Get segments which are used as a dependent by other segments to prevent batch deletion of them.
      *
      * @param array $segmentIds
-     *
-     * @return array
      */
-    public function canNotBeDeleted($segmentIds)
+    public function canNotBeDeleted($segmentIds): array
     {
         $entities = $this->getEntities(
             [

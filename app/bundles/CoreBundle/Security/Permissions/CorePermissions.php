@@ -54,7 +54,7 @@ class CorePermissions
 
     public function setPermissionObject(AbstractPermissions $permissionObject): void
     {
-        $this->permissionObjectsByClass[get_class($permissionObject)] = $permissionObject;
+        $this->permissionObjectsByClass[$permissionObject::class]     = $permissionObject;
         $this->permissionObjectsByName[$permissionObject->getName()]  = $permissionObject;
     }
 
@@ -72,7 +72,7 @@ class CorePermissions
         foreach ($this->getPermissionClasses() as $class) {
             try {
                 $this->getPermissionObject($class);
-            } catch (\InvalidArgumentException $e) {
+            } catch (\InvalidArgumentException) {
             }
         }
 

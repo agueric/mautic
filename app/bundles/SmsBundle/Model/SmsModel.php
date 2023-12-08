@@ -30,6 +30,7 @@ use Mautic\SmsBundle\SmsEvents;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\EventDispatcher\Event;
@@ -111,12 +112,10 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
      * @param null  $action
      * @param array $options
      *
-     * @return mixed
-     *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      * @throws MethodNotAllowedHttpException
      */
-    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = [])
+    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = []): FormInterface
     {
         if (!$entity instanceof Sms) {
             throw new MethodNotAllowedHttpException(['Sms']);
@@ -169,13 +168,11 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
     /**
      * @param array            $options
      * @param array<int, Lead> $leads
-     *
-     * @return array
      */
-    public function sendSms(Sms $sms, $sendTo, $options = [], array &$leads = [])
+    public function sendSms(Sms $sms, $sendTo, $options = [], array &$leads = []): array
     {
-        $channel = (isset($options['channel'])) ? $options['channel'] : null;
-        $listId  = (isset($options['listId'])) ? $options['listId'] : null;
+        $channel = $options['channel'] ?? null;
+        $listId  = $options['listId'] ?? null;
 
         if ($sendTo instanceof Lead) {
             $sendTo = [$sendTo];
@@ -237,7 +234,7 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
         }
 
         if (!empty($contacts)) {
-            $messageQueue    = (isset($options['resend_message_queue'])) ? $options['resend_message_queue'] : null;
+            $messageQueue    = $options['resend_message_queue'] ?? null;
             $campaignEventId = (is_array($channel) && 'campaign.event' === $channel[0] && !empty($channel[1])) ? $channel[1] : null;
 
             $queued = $this->messageQueueModel->processFrequencyRules(
@@ -383,7 +380,7 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
      *
      * @throws \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
      */
-    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null)
+    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null): ?Event
     {
         if (!$entity instanceof Sms) {
             throw new MethodNotAllowedHttpException(['Sms']);
@@ -529,7 +526,7 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
                     $limit,
                     $start,
                     $this->security->isGranted($this->getPermissionBase().':viewother'),
-                    isset($options['sms_type']) ? $options['sms_type'] : null
+                    $options['sms_type'] ?? null
                 );
 
                 foreach ($entities as $entity) {

@@ -253,10 +253,8 @@ class HitRepository extends CommonRepository
      *
      * @param array|string $pageIds
      * @param bool         $isVariantCheck
-     *
-     * @return array
      */
-    public function getBounces($pageIds, \DateTime $fromDate = null, $isVariantCheck = false)
+    public function getBounces($pageIds, \DateTime $fromDate = null, $isVariantCheck = false): array
     {
         $inOrEq = (!is_array($pageIds)) ? 'eq' : 'in';
 
@@ -345,10 +343,8 @@ class HitRepository extends CommonRepository
 
     /**
      * Get the dwell times for bunch of pages.
-     *
-     * @return array
      */
-    public function getDwellTimesForPages(array $pageIds, array $options)
+    public function getDwellTimesForPages(array $pageIds, array $options): array
     {
         $q = $this->_em->getConnection()->createQueryBuilder();
         $q->from(MAUTIC_TABLE_PREFIX.'page_hits', 'ph')

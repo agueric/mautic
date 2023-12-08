@@ -15,10 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class DynamicContentController extends FormController
 {
-    /**
-     * @return array
-     */
-    protected function getPermissions()
+    protected function getPermissions(): array
     {
         return (array) $this->security->isGranted(
             [
@@ -384,7 +381,7 @@ class DynamicContentController extends FormController
 
         /* @var DynamicContent $parent */
         /* @var DynamicContent[] $children */
-        list($translationParent, $translationChildren) = $entity->getTranslations();
+        [$translationParent, $translationChildren] = $entity->getTranslations();
 
         // Audit Log
         $auditLogModel = $this->getModel('core.auditlog');

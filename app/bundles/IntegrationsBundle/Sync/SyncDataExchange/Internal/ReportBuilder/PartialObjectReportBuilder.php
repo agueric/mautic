@@ -77,14 +77,14 @@ class PartialObjectReportBuilder
                     DebugLogger::log(
                         MauticSyncDataExchange::NAME,
                         $exception->getMessage(),
-                        __CLASS__.':'.__FUNCTION__
+                        self::class.':'.__FUNCTION__
                     );
                 }
             } catch (ObjectNotFoundException $exception) {
                 DebugLogger::log(
                     MauticSyncDataExchange::NAME,
                     $exception->getMessage(),
-                    __CLASS__.':'.__FUNCTION__
+                    self::class.':'.__FUNCTION__
                 );
             }
         }
@@ -147,7 +147,7 @@ class PartialObjectReportBuilder
             foreach ($fields as $field) {
                 try {
                     $syncObject->getField($field);
-                } catch (FieldNotFoundException $exception) {
+                } catch (FieldNotFoundException) {
                     $missingFields[] = $field;
                 }
             }
@@ -189,7 +189,7 @@ class PartialObjectReportBuilder
                     DebugLogger::log(
                         MauticSyncDataExchange::NAME,
                         $exception->getMessage(),
-                        __CLASS__.':'.__FUNCTION__
+                        self::class.':'.__FUNCTION__
                     );
                 }
             }

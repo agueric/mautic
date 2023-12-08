@@ -58,7 +58,7 @@ class CompanyRepository extends CommonRepository implements CustomFieldRepositor
             }
             $q->andWhere($this->getTableAlias().'.id = '.(int) $companyId);
             $entity = $q->getQuery()->getSingleResult();
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $entity = null;
         }
 
@@ -169,7 +169,7 @@ class CompanyRepository extends CommonRepository implements CustomFieldRepositor
      */
     protected function addSearchCommandWhereClause($q, $filter): array
     {
-        list($expr, $parameters) = $this->addStandardSearchCommandWhereClause($q, $filter);
+        [$expr, $parameters]     = $this->addStandardSearchCommandWhereClause($q, $filter);
         $unique                  = $this->generateRandomParameterName();
         $returnParameter         = true;
         $command                 = $filter->command;
@@ -338,10 +338,7 @@ class CompanyRepository extends CommonRepository implements CustomFieldRepositor
         return ($results) ? $results[0] : null;
     }
 
-    /**
-     * @return array
-     */
-    public function getCompaniesForContacts(array $contacts)
+    public function getCompaniesForContacts(array $contacts): array
     {
         if (!$contacts) {
             return [];

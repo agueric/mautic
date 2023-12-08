@@ -99,7 +99,7 @@ class ConfigMonitoredMailboxesType extends AbstractType
                         'tooltip'      => 'mautic.email.config.monitored_email_encryption.tooltip',
                     ],
                     'placeholder' => 'mautic.email.config.mailer_encryption.none',
-                    'data'        => (isset($options['data']['encryption'])) ? $options['data']['encryption'] : '/ssl',
+                    'data'        => $options['data']['encryption'] ?? '/ssl',
                 ]
             );
         }
@@ -168,7 +168,7 @@ class ConfigMonitoredMailboxesType extends AbstractType
                 try {
                     $folders = $this->imapHelper->getListingFolders();
                     $choices = array_combine($folders, $folders);
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                     // If the connection failed - add back the selected folder just in case it's a temporary connection issue
                     if (!empty($options['data']['folder'])) {
                         $choices[$options['data']['folder']] = $options['data']['folder'];

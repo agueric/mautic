@@ -32,11 +32,6 @@ abstract class SocialIntegration extends AbstractIntegration
      */
     protected TranslatorInterface $translator;
 
-    /**
-     * @var IntegrationHelper
-     */
-    protected $integrationHelper;
-
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         CacheStorageHelper $cacheStorageHelper,
@@ -54,10 +49,8 @@ abstract class SocialIntegration extends AbstractIntegration
         FieldModel $fieldModel,
         IntegrationEntityModel $integrationEntityModel,
         DoNotContact $doNotContact,
-        IntegrationHelper $integrationHelper
+        protected IntegrationHelper $integrationHelper
     ) {
-        $this->integrationHelper = $integrationHelper;
-
         parent::__construct(
             $eventDispatcher,
             $cacheStorageHelper,
@@ -92,7 +85,7 @@ abstract class SocialIntegration extends AbstractIntegration
                 $builder->add('shareButton', $formType, [
                     'label'    => 'mautic.integration.form.sharebutton',
                     'required' => false,
-                    'data'     => (isset($data['shareButton'])) ? $data['shareButton'] : [],
+                    'data'     => $data['shareButton'] ?? [],
                 ]);
             }
         }

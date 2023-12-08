@@ -19,10 +19,8 @@ class LeadFieldRepository extends CommonRepository
      * @param bool   $publishedOnly
      * @param bool   $includeEntityFields
      * @param string $object              name of object using the custom fields
-     *
-     * @return array
      */
-    public function getAliases($exludingId, $publishedOnly = false, $includeEntityFields = true, $object = 'lead')
+    public function getAliases($exludingId, $publishedOnly = false, $includeEntityFields = true, $object = 'lead'): array
     {
         $q = $this->_em->getConnection()->createQueryBuilder()
             ->select('l.alias')
@@ -55,7 +53,7 @@ class LeadFieldRepository extends CommonRepository
 
         if ($includeEntityFields) {
             // add lead main column names to prevent attempt to create a field with the same name
-            $leadRepo = $this->_em->getRepository(\Mautic\LeadBundle\Entity\Lead::class)->getBaseColumns('Mautic\\LeadBundle\\Entity\\Lead', true);
+            $leadRepo = $this->_em->getRepository(\Mautic\LeadBundle\Entity\Lead::class)->getBaseColumns(\Mautic\LeadBundle\Entity\Lead::class, true);
             $aliases  = array_merge($aliases, $leadRepo);
         }
 

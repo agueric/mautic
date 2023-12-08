@@ -66,7 +66,7 @@ class ChartQuery extends AbstractChart
     public function __construct(protected Connection $connection, \DateTime $dateFrom, \DateTime $dateTo, $unit = null)
     {
         $this->dateTimeHelper = new DateTimeHelper();
-        $this->unit           = (null === $unit) ? $this->getTimeUnitFromDateRange($dateFrom, $dateTo) : $unit;
+        $this->unit           = $unit ?? $this->getTimeUnitFromDateRange($dateFrom, $dateTo);
         $this->isTimeUnit     = in_array($this->unit, ['H', 'i', 's']);
         $this->setDateRange($dateFrom, $dateTo);
     }
@@ -478,10 +478,8 @@ class ChartQuery extends AbstractChart
      * @param string $dateColumn   name
      * @param array  $filters      will be added to where claues
      * @param array  $options      for special behavior
-     *
-     * @return int
      */
-    public function count($table, $uniqueColumn, $dateColumn = null, $filters = [], $options = [])
+    public function count($table, $uniqueColumn, $dateColumn = null, $filters = [], $options = []): int
     {
         $query = $this->getCountQuery($table, $uniqueColumn, $dateColumn, $filters);
 
@@ -582,7 +580,7 @@ class ChartQuery extends AbstractChart
                 $generatedColumn = $generatedColumns->getForOriginalDateColumnAndUnit($column, $this->unit);
 
                 return $tablePrefix.'.'.$generatedColumn->getColumnName();
-            } catch (\UnexpectedValueException $e) {
+            } catch (\UnexpectedValueException) {
                 // Alright. Use the original column then.
             }
         }

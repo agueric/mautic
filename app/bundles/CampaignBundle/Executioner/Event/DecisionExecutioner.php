@@ -30,7 +30,7 @@ class DecisionExecutioner implements EventInterface
      * @throws CannotProcessEventException
      * @throws DecisionNotApplicableException
      */
-    public function evaluateForContact(DecisionAccessor $config, Event $event, Lead $contact, $passthrough = null, $channel = null, $channelId = null)
+    public function evaluateForContact(DecisionAccessor $config, Event $event, Lead $contact, $passthrough = null, $channel = null, $channelId = null): void
     {
         if (Event::TYPE_DECISION !== $event->getEventType()) {
             throw new CannotProcessEventException('Cannot process event ID '.$event->getId().' as a decision.');
@@ -71,7 +71,7 @@ class DecisionExecutioner implements EventInterface
 
                 // Update the date triggered timestamp
                 $log->setDateTriggered(new \DateTime());
-            } catch (DecisionNotApplicableException $exception) {
+            } catch (DecisionNotApplicableException) {
                 // Fail the contact but remove the log from being processed upstream
                 // active/positive/green path while letting the InactiveExecutioner handle the inactive/negative/red paths
                 $failedLogs[] = $log;
@@ -92,7 +92,7 @@ class DecisionExecutioner implements EventInterface
     /**
      * @throws DecisionNotApplicableException
      */
-    private function dispatchEvent(DecisionAccessor $config, LeadEventLog $log)
+    private function dispatchEvent(DecisionAccessor $config, LeadEventLog $log): void
     {
         $decisionEvent = $this->dispatcher->dispatchEvaluationEvent($config, $log);
 

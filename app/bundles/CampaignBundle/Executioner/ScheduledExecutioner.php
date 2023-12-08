@@ -73,7 +73,7 @@ class ScheduledExecutioner implements ExecutionerInterface, ResetInterface
     {
         $this->campaign   = $campaign;
         $this->limiter    = $limiter;
-        $this->output     = ($output) ? $output : new NullOutput();
+        $this->output     = $output ?: new NullOutput();
         $this->counter    = new Counter();
 
         $this->logger->debug('CAMPAIGN: Triggering scheduled events');
@@ -81,7 +81,7 @@ class ScheduledExecutioner implements ExecutionerInterface, ResetInterface
         try {
             $this->prepareForExecution();
             $this->executeOrRescheduleEvent();
-        } catch (NoEventsFoundException $exception) {
+        } catch (NoEventsFoundException) {
             $this->logger->debug('CAMPAIGN: No events to process');
         } finally {
             if ($this->progressBar) {
@@ -103,7 +103,7 @@ class ScheduledExecutioner implements ExecutionerInterface, ResetInterface
      */
     public function executeByIds(array $logIds, OutputInterface $output = null)
     {
-        $this->output  = ($output) ? $output : new NullOutput();
+        $this->output  = $output ?: new NullOutput();
         $this->counter = new Counter();
 
         if (!$logIds) {
@@ -152,7 +152,7 @@ class ScheduledExecutioner implements ExecutionerInterface, ResetInterface
                     $this->scheduledContactFinder->hydrateContacts($organizedLogs);
 
                     $this->executioner->executeLogs($event, $organizedLogs, $this->counter);
-                } catch (NoContactsFoundException $e) {
+                } catch (NoContactsFoundException) {
                     // All of the events were rescheduled
                 }
             } else {
@@ -178,9 +178,9 @@ class ScheduledExecutioner implements ExecutionerInterface, ResetInterface
     /**
      * @throws NoEventsFoundException
      */
-    private function prepareForExecution()
+    private function prepareForExecution(): void
     {
-        $this->now = $this->now ?? new \DateTime();
+        $this->now ??= new \DateTime();
 
         // Get counts by event
         $scheduledEvents       = $this->repo->getScheduledCounts($this->campaign->getId(), $this->now, $this->limiter);
@@ -239,7 +239,7 @@ class ScheduledExecutioner implements ExecutionerInterface, ResetInterface
         while ($logs->count()) {
             try {
                 $fetchedContacts = $this->scheduledContactFinder->hydrateContacts($logs);
-            } catch (NoContactsFoundException $e) {
+            } catch (NoContactsFoundException) {
                 break;
             }
 

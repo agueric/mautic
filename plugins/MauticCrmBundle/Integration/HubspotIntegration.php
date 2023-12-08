@@ -37,11 +37,6 @@ class HubspotIntegration extends CrmAbstractIntegration
 {
     public const ACCESS_KEY = 'accessKey';
 
-    /**
-     * @var UserHelper
-     */
-    protected $userHelper;
-
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         CacheStorageHelper $cacheStorageHelper,
@@ -59,10 +54,8 @@ class HubspotIntegration extends CrmAbstractIntegration
         FieldModel $fieldModel,
         IntegrationEntityModel $integrationEntityModel,
         DoNotContact $doNotContact,
-        UserHelper $userHelper
+        protected UserHelper $userHelper
     ) {
-        $this->userHelper = $userHelper;
-
         parent::__construct(
             $eventDispatcher,
             $cacheStorageHelper,
@@ -149,10 +142,8 @@ class HubspotIntegration extends CrmAbstractIntegration
 
     /**
      * {@inheritdoc}
-     *
-     * @return string
      */
-    public function getAuthenticationType()
+    public function getAuthenticationType(): string
     {
         return $this->getBearerToken() ? 'oauth2' : 'key';
     }
@@ -196,22 +187,22 @@ class HubspotIntegration extends CrmAbstractIntegration
     }
 
     /**
-     * @return array|mixed
+     * @return mixed[]
      */
-    public function getAvailableLeadFields($settings = [])
+    public function getAvailableLeadFields($settings = []): array
     {
         if ($fields = parent::getAvailableLeadFields()) {
             return $fields;
         }
 
         $hubsFields        = [];
-        $silenceExceptions = (isset($settings['silence_exceptions'])) ? $settings['silence_exceptions'] : true;
+        $silenceExceptions = $settings['silence_exceptions'] ?? true;
 
         if (isset($settings['feature_settings']['objects'])) {
             $hubspotObjects = $settings['feature_settings']['objects'];
         } else {
             $settings       = $this->settings->getFeatureSettings();
-            $hubspotObjects = isset($settings['objects']) ? $settings['objects'] : ['contacts'];
+            $hubspotObjects = $settings['objects'] ?? ['contacts'];
         }
 
         try {
@@ -281,10 +272,8 @@ class HubspotIntegration extends CrmAbstractIntegration
      * Format the lead data to the structure that HubSpot requires for the createOrUpdate request.
      *
      * @param array $leadData All the lead fields mapped
-     *
-     * @return array
      */
-    public function formatLeadDataForCreateOrUpdate($leadData, $lead, $updateLink = false)
+    public function formatLeadDataForCreateOrUpdate($leadData, $lead, $updateLink = false): array
     {
         $formattedLeadData = [];
 
@@ -678,7 +667,7 @@ class HubspotIntegration extends CrmAbstractIntegration
      *
      * @throws \Exception
      */
-    private function getReadOnlyFields($object)
+    private function getReadOnlyFields($object): ?array
     {
         $fields = ArrayHelper::getValue($object, $this->getAvailableLeadFields(), []);
 

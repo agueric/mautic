@@ -216,7 +216,7 @@ class MauticFactory
         /** @var \AppKernel $kernel */
         $kernel = $this->container->get('kernel');
 
-        return $kernel->getLocalConfigFile($checkExists);
+        return $kernel->getLocalConfigFile();
     }
 
     /**
@@ -335,20 +335,14 @@ class MauticFactory
      */
     public function getHelper($helper)
     {
-        switch ($helper) {
-            case 'template.assets':
-                return $this->container->get('twig.helper.assets');
-            case 'template.slots':
-                return $this->container->get('twig.helper.slots');
-            case 'template.form':
-                return $this->container->get('twig.helper.form');
-            case 'template.translator':
-                return $this->container->get('twig.helper.translator');
-            case 'template.router':
-                return $this->container->get('twig.helper.router');
-            default:
-                return $this->container->get('mautic.helper.'.$helper);
-        }
+        return match ($helper) {
+            'template.assets'     => $this->container->get('twig.helper.assets'),
+            'template.slots'      => $this->container->get('twig.helper.slots'),
+            'template.form'       => $this->container->get('twig.helper.form'),
+            'template.translator' => $this->container->get('twig.helper.translator'),
+            'template.router'     => $this->container->get('twig.helper.router'),
+            default               => $this->container->get('mautic.helper.'.$helper),
+        };
     }
 
     /**

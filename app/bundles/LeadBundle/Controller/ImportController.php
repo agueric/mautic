@@ -372,7 +372,7 @@ class ImportController extends FormController
                                 } else {
                                     $errorMessage = 'mautic.lead.import.filenotreadable';
                                 }
-                            } catch (\Exception $e) {
+                            } catch (\Exception) {
                                 $errorMessage = 'mautic.lead.import.filenotreadable';
                             } finally {
                                 if (!is_null($errorMessage)) {
@@ -513,7 +513,7 @@ class ImportController extends FormController
     {
         $progress = $this->session->get('mautic.'.$object.'.import.progress', [0, 0]);
 
-        return isset($progress[1]) ? $progress[1] : 0;
+        return $progress[1] ?? 0;
     }
 
     /**
@@ -624,9 +624,9 @@ class ImportController extends FormController
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
-    public function getViewArguments(array $args, $action)
+    public function getViewArguments(array $args, $action): array
     {
         switch ($action) {
             case 'view':
@@ -640,7 +640,7 @@ class ImportController extends FormController
                         'importedRowsChart' => $entity->getDateStarted() ? $this->importModel->getImportedRowsLineChartData(
                             'i',
                             $entity->getDateStarted(),
-                            $entity->getDateEnded() ? $entity->getDateEnded() : $entity->getDateModified(),
+                            $entity->getDateEnded() ?: $entity->getDateModified(),
                             null,
                             [
                                 'object_id' => $entity->getId(),
@@ -657,8 +657,6 @@ class ImportController extends FormController
 
     /**
      * Support non-index pages such as modal forms.
-     *
-     * @return bool|string
      */
     protected function generateUrl(string $route, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
     {

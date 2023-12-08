@@ -43,11 +43,9 @@ class MauticSyncProcess
     }
 
     /**
-     * @return ReportDAO
-     *
      * @throws ObjectNotFoundException
      */
-    public function getSyncReport(int $syncIteration)
+    public function getSyncReport(int $syncIteration): ReportDAO
     {
         $internalRequestDAO = new RequestDAO($this->mappingManualDAO->getIntegration(), $syncIteration, $this->inputOptionsDAO);
 
@@ -62,7 +60,7 @@ class MauticSyncProcess
                         'Mautic to integration; there are no fields for the %s object',
                         $internalObjectName
                     ),
-                    __CLASS__.':'.__FUNCTION__
+                    self::class.':'.__FUNCTION__
                 );
 
                 continue;
@@ -79,7 +77,7 @@ class MauticSyncProcess
                     $internalObjectName,
                     count($internalObjectFields)
                 ),
-                __CLASS__.':'.__FUNCTION__
+                self::class.':'.__FUNCTION__
             );
 
             $internalRequestObject  = new RequestObjectDAO($internalObjectName, $objectSyncFromDateTime, $objectSyncToDateTime);
@@ -119,7 +117,7 @@ class MauticSyncProcess
                     $integrationObjectName,
                     implode(', ', $mappedInternalObjectsNames)
                 ),
-                __CLASS__.':'.__FUNCTION__
+                self::class.':'.__FUNCTION__
             );
 
             foreach ($mappedInternalObjectsNames as $mappedInternalObjectName) {
@@ -142,7 +140,7 @@ class MauticSyncProcess
                         if ($objectChange->shouldSync()) {
                             $syncOrder->addObjectChange($objectChange);
                         }
-                    } catch (ObjectDeletedException $exception) {
+                    } catch (ObjectDeletedException) {
                         DebugLogger::log(
                             $this->mappingManualDAO->getIntegration(),
                             sprintf(
@@ -150,7 +148,7 @@ class MauticSyncProcess
                                 $integrationObject->getObject(),
                                 $integrationObject->getObjectId()
                             ),
-                            __CLASS__.':'.__FUNCTION__
+                            self::class.':'.__FUNCTION__
                         );
                     }
                 }

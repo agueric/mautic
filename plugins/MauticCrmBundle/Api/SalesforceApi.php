@@ -63,7 +63,7 @@ class SalesforceApi extends CrmApi
 
         try {
             $this->analyzeResponse($response, $isRetry);
-        } catch (RetryRequestException $exception) {
+        } catch (RetryRequestException) {
             return $this->request($operation, $elementData, $method, true, $object, $queryUrl);
         }
 
@@ -490,7 +490,7 @@ class SalesforceApi extends CrmApi
      * @throws ApiErrorException
      * @throws RetryRequestException
      */
-    private function analyzeResponse($response, $isRetry)
+    private function analyzeResponse($response, $isRetry): void
     {
         if (is_array($response)) {
             if (!empty($response['errors'])) {
@@ -547,7 +547,7 @@ class SalesforceApi extends CrmApi
      * @throws ApiErrorException
      * @throws RetryRequestException
      */
-    private function revalidateSession($isRetry)
+    private function revalidateSession($isRetry): void
     {
         if ($refreshError = $this->integration->authCallback(['use_refresh_token' => true])) {
             throw new ApiErrorException($refreshError);

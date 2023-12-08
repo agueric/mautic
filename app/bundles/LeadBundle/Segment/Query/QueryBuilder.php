@@ -170,17 +170,16 @@ class QueryBuilder extends BaseQueryBuilder
     }
 
     /**
-     * @param string $table
-     * @param null   $joinType allowed values: inner, left, right
+     * @param null $joinType allowed values: inner, left, right
      *
      * @return array|bool|string
      */
-    public function getTableAlias($table, $joinType = null)
+    public function getTableAlias(string $table, $joinType = null)
     {
         if (is_null($joinType)) {
             $tables = $this->getTableAliases();
 
-            return isset($tables[$table]) ? $tables[$table] : false;
+            return $tables[$table] ?? false;
         }
 
         $tableJoins = $this->getTableJoins($table);
@@ -194,7 +193,10 @@ class QueryBuilder extends BaseQueryBuilder
         return false;
     }
 
-    public function getTableJoins($tableName)
+    /**
+     * @return mixed[]
+     */
+    public function getTableJoins(string $tableName): array
     {
         $found = [];
         foreach ($this->getQueryParts()['join'] as $join) {

@@ -102,7 +102,7 @@ class SysinfoModel
 
         foreach ($importantFolders as $folder) {
             $folderPath = realpath($folder);
-            $folderKey  = ($folderPath) ? $folderPath : $folder;
+            $folderKey  = $folderPath ?: $folder;
             $isWritable = $folderPath && is_writable($folderPath);
 
             $this->folders[$folderKey] = $isWritable;
@@ -134,7 +134,7 @@ class SysinfoModel
         return [
             'version'  => $this->connection->executeQuery('SELECT VERSION()')->fetchOne(),
             'driver'   => $this->connection->getParams()['driver'],
-            'platform' => get_class($this->connection->getDatabasePlatform()),
+            'platform' => $this->connection->getDatabasePlatform()::class,
         ];
     }
 

@@ -46,7 +46,7 @@ class MessageQueueModel extends FormModel
      * @param null   $campaignEventId
      * @param int    $attempts
      * @param int    $priority
-     * @param null   $messageQueue
+     * @param mixed  $messageQueue
      * @param string $statTableName
      * @param string $statContactColumn
      * @param string $statSentColumn
@@ -167,10 +167,8 @@ class MessageQueueModel extends FormModel
     /**
      * @param null $channel
      * @param null $channelId
-     *
-     * @return int
      */
-    public function sendMessages($channel = null, $channelId = null)
+    public function sendMessages($channel = null, $channelId = null): int
     {
         // Note when the process started for batch purposes
         $processStarted = new \DateTime();
@@ -216,7 +214,7 @@ class MessageQueueModel extends FormModel
             $contactData = $this->leadModel->getRepository()->getContacts($contacts);
             $companyData = $this->companyModel->getRepository()->getCompaniesForContacts($contacts);
             foreach ($contacts as $messageId => $contactId) {
-                $contactData[$contactId]['companies'] = isset($companyData[$contactId]) ? $companyData[$contactId] : null;
+                $contactData[$contactId]['companies'] = $companyData[$contactId] ?? null;
                 $queue[$messageId]->getLead()->setFields($contactData[$contactId]);
             }
         }
@@ -339,7 +337,7 @@ class MessageQueueModel extends FormModel
      *
      * @throws \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
      */
-    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null)
+    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null): ?Event
     {
         switch ($action) {
             case 'process_message_queue':

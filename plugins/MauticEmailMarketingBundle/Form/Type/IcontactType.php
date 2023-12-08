@@ -17,20 +17,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class IcontactType extends AbstractType
 {
-    private IntegrationHelper $integrationHelper;
-
-    private PluginModel $pluginModel;
-
-    protected SessionInterface $session;
-
-    protected CoreParametersHelper $coreParametersHelper;
-
-    public function __construct(IntegrationHelper $integrationHelper, PluginModel $pluginModel, SessionInterface $session, CoreParametersHelper $coreParametersHelper)
+    public function __construct(private IntegrationHelper $integrationHelper, private PluginModel $pluginModel, protected SessionInterface $session, protected CoreParametersHelper $coreParametersHelper)
     {
-        $this->integrationHelper    = $integrationHelper;
-        $this->pluginModel          = $pluginModel;
-        $this->session              = $session;
-        $this->coreParametersHelper = $coreParametersHelper;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -87,7 +75,7 @@ class IcontactType extends AbstractType
 
             $fields = $object->getFormLeadFields();
 
-            list($specialInstructions, $alertType) = $object->getFormNotes('leadfield_match');
+            [$specialInstructions, $alertType] = $object->getFormNotes('leadfield_match');
             $builder->add('leadFields', FieldsType::class, [
                 'label'                => 'mautic.integration.leadfield_matches',
                 'required'             => true,
@@ -96,7 +84,7 @@ class IcontactType extends AbstractType
                 'integration_object'   => $object,
                 'limit'                => $limit,
                 'page'                 => $page,
-                'data'                 => isset($options['data']) ? $options['data'] : [],
+                'data'                 => $options['data'] ?? [],
                 'integration_fields'   => $fields,
                 'special_instructions' => $specialInstructions,
                 'mapped'               => true,

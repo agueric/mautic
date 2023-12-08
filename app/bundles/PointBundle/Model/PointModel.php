@@ -81,7 +81,7 @@ class PointModel extends CommonFormModel
      *
      * @throws MethodNotAllowedHttpException
      */
-    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = [])
+    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = []): \Symfony\Component\Form\FormInterface
     {
         if (!$entity instanceof Point) {
             throw new MethodNotAllowedHttpException(['Point']);
@@ -117,7 +117,7 @@ class PointModel extends CommonFormModel
      *
      * @throws MethodNotAllowedHttpException
      */
-    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null)
+    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null): ?Event
     {
         if (!$entity instanceof Point) {
             throw new MethodNotAllowedHttpException(['Point']);
@@ -250,8 +250,7 @@ class PointModel extends CommonFormModel
                 'eventDetails' => $eventDetails,
             ];
 
-            $callback = (isset($settings['callback'])) ? $settings['callback'] :
-                ['\\Mautic\\PointBundle\\Helper\\EventHelper', 'engagePointAction'];
+            $callback = $settings['callback'] ?? [\Mautic\PointBundle\Helper\EventHelper::class, 'engagePointAction'];
 
             if (is_callable($callback)) {
                 if (is_array($callback)) {

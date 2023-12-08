@@ -31,6 +31,7 @@ use Mautic\LeadBundle\LeadEvents;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\EventDispatcher\Event;
@@ -605,13 +606,13 @@ class FieldModel extends FormModel
     /**
      * Delete an array of entities.
      *
-     * @param array $ids
+     * @param mixed[] $ids
      *
-     * @return array
+     * @return mixed[]
      *
      * @throws \Mautic\CoreBundle\Exception\SchemaException
      */
-    public function deleteEntities($ids)
+    public function deleteEntities($ids): array
     {
         $entities = parent::deleteEntities($ids);
 
@@ -655,15 +656,13 @@ class FieldModel extends FormModel
      */
     public function filterUsedFieldIds(array $ids): array
     {
-        return array_filter($ids, function ($id): bool {
-            return false === $this->isUsedField($this->getEntity($id));
-        });
+        return array_filter($ids, fn ($id): bool => false === $this->isUsedField($this->getEntity($id)));
     }
 
     /**
      * Reorder fields based on passed entity position.
      */
-    public function reorderFieldsByEntity($entity)
+    public function reorderFieldsByEntity($entity): void
     {
         if (!$entity instanceof LeadField) {
             throw new MethodNotAllowedHttpException(['LeadEntity']);
@@ -735,11 +734,9 @@ class FieldModel extends FormModel
      * @param null  $action
      * @param array $options
      *
-     * @return mixed
-     *
      * @throws MethodNotAllowedHttpException
      */
-    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = [])
+    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = []): FormInterface
     {
         if (!$entity instanceof LeadField) {
             throw new MethodNotAllowedHttpException(['LeadField']);
@@ -780,7 +777,7 @@ class FieldModel extends FormModel
      *
      * @throws \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
      */
-    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null)
+    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null): ?Event
     {
         switch ($action) {
             case 'pre_save':
@@ -807,7 +804,7 @@ class FieldModel extends FormModel
 
         try {
             return $this->fieldSaveDispatcher->dispatchEvent($action, $entity, $isNew, $event);
-        } catch (NoListenerException $exception) {
+        } catch (NoListenerException) {
             return $event;
         }
     }
@@ -895,10 +892,8 @@ class FieldModel extends FormModel
      * Get the fields for a specific group.
      *
      * @param array $filters
-     *
-     * @return array
      */
-    public function getGroupFields($group, $filters = ['isPublished' => true])
+    public function getGroupFields($group, $filters = ['isPublished' => true]): array
     {
         $forceFilters = [
             [

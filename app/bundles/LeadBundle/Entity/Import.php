@@ -363,7 +363,7 @@ class Import extends FormEntity
      */
     public function getName()
     {
-        return $this->getOriginalFile() ? $this->getOriginalFile() : $this->getId();
+        return $this->getOriginalFile() ?: $this->getId();
     }
 
     /**
@@ -549,22 +549,14 @@ class Import extends FormEntity
      */
     public function getSatusLabelClass()
     {
-        switch ($this->status) {
-            case self::QUEUED:
-                return 'info';
-            case self::IN_PROGRESS:
-            case self::MANUAL:
-                return 'primary';
-            case self::IMPORTED:
-                return 'success';
-            case self::FAILED:
-                return 'danger';
-            case self::STOPPED:
-            case self::DELAYED:
-                return 'warning';
-            default:
-                return 'default';
-        }
+        return match ($this->status) {
+            self::QUEUED => 'info',
+            self::IN_PROGRESS, self::MANUAL => 'primary',
+            self::IMPORTED => 'success',
+            self::FAILED   => 'danger',
+            self::STOPPED, self::DELAYED => 'warning',
+            default => 'default',
+        };
     }
 
     /**
@@ -746,7 +738,7 @@ class Import extends FormEntity
      */
     public function getLastLineImported()
     {
-        return isset($this->properties['line']) ? $this->properties['line'] : 0;
+        return $this->properties['line'] ?? 0;
     }
 
     /**
@@ -787,11 +779,7 @@ class Import extends FormEntity
      */
     public function getDefaults()
     {
-        if (isset($this->properties['defaults'])) {
-            return $this->properties['defaults'];
-        }
-
-        return [];
+        return $this->properties['defaults'] ?? [];
     }
 
     /**

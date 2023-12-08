@@ -191,7 +191,7 @@ class PageModel extends FormModel
     /**
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = [])
+    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = []): \Symfony\Component\Form\FormInterface
     {
         if (!$entity instanceof Page) {
             throw new MethodNotAllowedHttpException(['Page']);
@@ -231,7 +231,7 @@ class PageModel extends FormModel
     /**
      * @throws \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
      */
-    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null)
+    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null): ?Event
     {
         if (!$entity instanceof Page) {
             throw new MethodNotAllowedHttpException(['Page']);
@@ -374,7 +374,7 @@ class PageModel extends FormModel
      *
      * @throws \Exception
      */
-    public function hitPage(Redirect|Page|null $page, Request $request, $code = '200', Lead $lead = null, $query = [])
+    public function hitPage(Redirect|Page|null $page, Request $request, $code = '200', Lead $lead = null, $query = []): void
     {
         // Don't skew results with user hits
         if (!$this->security->isAnonymous()) {
@@ -551,7 +551,7 @@ class PageModel extends FormModel
         }
 
         $hit->setQuery($query);
-        $hit->setUrl((isset($query['page_url'])) ? $query['page_url'] : $request->getRequestUri());
+        $hit->setUrl($query['page_url'] ?? $request->getRequestUri());
 
         // Add entry to contact log table
         $this->setLeadManipulator($page, $hit, $lead);
@@ -691,10 +691,8 @@ class PageModel extends FormModel
 
     /**
      * @param Redirect|Page|null $page
-     *
-     * @return array
      */
-    public function getHitQuery(Request $request, $page = null)
+    public function getHitQuery(Request $request, $page = null): array
     {
         $get  = $request->query->all();
         $post = $request->request->all();

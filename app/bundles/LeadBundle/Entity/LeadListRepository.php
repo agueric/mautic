@@ -59,7 +59,7 @@ class LeadListRepository extends CommonRepository
                 ->setParameter('listId', $id)
                 ->getQuery()
                 ->getSingleResult();
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $entity = null;
         }
 
@@ -316,17 +316,14 @@ class LeadListRepository extends CommonRepository
         return $qb;
     }
 
-    /**
-     * @return array
-     */
-    public function arrangeFilters($filters)
+    public function arrangeFilters($filters): array
     {
         $objectFilters = [];
         if (empty($filters)) {
             $objectFilters['lead'][] = $filters;
         }
         foreach ($filters as $filter) {
-            $object = (isset($filter['object'])) ? $filter['object'] : 'lead';
+            $object = $filter['object'] ?? 'lead';
             switch ($object) {
                 case 'company':
                     $objectFilters['company'][] = $filter;

@@ -157,7 +157,7 @@ class SubmissionModel extends CommonFormModel
             $id    = $f->getId();
             $type  = $f->getType();
             $alias = $f->getAlias();
-            $value = (isset($post[$alias])) ? $post[$alias] : '';
+            $value = $post[$alias] ?? '';
 
             $fieldArray[$id] = [
                 'id'    => $id,
@@ -178,7 +178,7 @@ class SubmissionModel extends CommonFormModel
                     $file  = $this->uploadFieldValidator->processFileValidation($f, $request);
                     $value = $file->getClientOriginalName();
                     $filesToUpload->addFile($file, $f);
-                } catch (NoFileGivenException $e) { // No error here, we just move to another validation, eg. if a field is required
+                } catch (NoFileGivenException) { // No error here, we just move to another validation, eg. if a field is required
                 } catch (FileValidationException $e) {
                     $validationErrors[$alias] = $e->getMessage();
                 }
@@ -225,7 +225,7 @@ class SubmissionModel extends CommonFormModel
                 $params = $components['fields'][$f->getType()];
                 if (!empty($value)) {
                     if (isset($params['valueFilter'])) {
-                        if (is_string($params['valueFilter']) && is_callable(['\Mautic\CoreBundle\Helper\InputHelper', $params['valueFilter']])) {
+                        if (is_string($params['valueFilter']) && is_callable([\Mautic\CoreBundle\Helper\InputHelper::class, $params['valueFilter']])) {
                             $value = InputHelper::_($value, $params['valueFilter']);
                         } elseif (is_callable($params['valueFilter'])) {
                             $value = call_user_func_array($params['valueFilter'], [$f, $value]);
@@ -853,9 +853,7 @@ class SubmissionModel extends CommonFormModel
         $customComponents = $this->formModel->getCustomComponents();
         $availableActions = $customComponents['actions'] ?? [];
 
-        $actions->filter(function (Action $action) use ($availableActions): bool {
-            return array_key_exists($action->getType(), $availableActions);
-        })->map(function (Action $action) use ($event, $availableActions): void {
+        $actions->filter(fn (Action $action): bool => array_key_exists($action->getType(), $availableActions))->map(function (Action $action) use ($event, $availableActions): void {
             $event->setAction($action);
             $this->dispatcher->dispatch($event, $availableActions[$action->getType()]['eventName']);
         });
@@ -894,7 +892,7 @@ class SubmissionModel extends CommonFormModel
         $uniqueLeadFields = $this->leadFieldModel->getUniqueIdentifierFields();
 
         // Closure to get data and unique fields
-        $getData = function ($currentFields, $uniqueOnly = false) use ($leadFields, $uniqueLeadFields) {
+        $getData = function ($currentFields, $uniqueOnly = false) use ($leadFields, $uniqueLeadFields): array {
             $uniqueFieldsWithData = $data = [];
             foreach ($leadFields as $alias => $properties) {
                 if (isset($currentFields[$alias])) {
@@ -991,7 +989,7 @@ class SubmissionModel extends CommonFormModel
                 // Merge the found lead with currently tracked lead
                 try {
                     $lead = $this->contactMerger->merge($lead, $foundLead);
-                } catch (SameContactException $exception) {
+                } catch (SameContactException) {
                 }
             }
 

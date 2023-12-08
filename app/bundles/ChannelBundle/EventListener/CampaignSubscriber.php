@@ -24,9 +24,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CampaignSubscriber implements EventSubscriberInterface
 {
-    private ?Event $pseudoEvent;
+    private ?Event $pseudoEvent = null;
 
-    private ?ArrayCollection $mmLogs;
+    private ?ArrayCollection $mmLogs = null;
 
     /**
      * @var mixed[]
@@ -214,7 +214,7 @@ class CampaignSubscriber implements EventSubscriberInterface
                 if ($metadata = $channelLog->getMetadata()) {
                     $log->appendToMetadata([$channel => $metadata]);
                 }
-            } catch (NoContactsFoundException $exception) {
+            } catch (NoContactsFoundException) {
                 continue;
             }
         }

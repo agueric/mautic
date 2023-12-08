@@ -67,9 +67,9 @@ class FormController extends AbstractStandardFormController
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
-    public function getViewArguments(array $args, $action)
+    public function getViewArguments(array $args, $action): array
     {
         return $this->customizeViewArguments($args, $action);
     }
@@ -115,7 +115,7 @@ class FormController extends AbstractStandardFormController
      */
     protected function getSessionBase($objectId = null)
     {
-        return null !== $this->deprecatedSessionBase ? $this->deprecatedSessionBase : parent::getSessionBase($objectId);
+        return $this->deprecatedSessionBase ?? parent::getSessionBase($objectId);
     }
 
     /**

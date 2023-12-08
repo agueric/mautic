@@ -18,7 +18,7 @@ class TwitterIntegration extends SocialIntegration
     /**
      * {@inheritdoc}
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return 5000;
     }
@@ -217,7 +217,7 @@ class TwitterIntegration extends SocialIntegration
                     foreach ($d['entities']['media'] as $m) {
                         if ('photo' == $m['type']) {
                             $photo = [
-                                'url' => (isset($m['media_url_https']) ? $m['media_url_https'] : $m['media_url']),
+                                'url' => ($m['media_url_https'] ?? $m['media_url']),
                             ];
 
                             $socialCache['activity']['photos'][] = $photo;
@@ -262,7 +262,7 @@ class TwitterIntegration extends SocialIntegration
     /**
      * {@inheritdoc}
      */
-    public function cleanIdentifier($identifier)
+    public function cleanIdentifier($identifier): string
     {
         if (preg_match('#https?://twitter.com/(.*?)(/.*?|$)#i', $identifier, $match)) {
             // extract the handle

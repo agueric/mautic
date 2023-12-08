@@ -20,7 +20,7 @@ class EncryptionHelper
         for ($i = $nonCipherArgs; $i < func_num_args(); ++$i) {
             $possibleCipher = func_get_arg($i);
             if (!($possibleCipher instanceof SymmetricCipherInterface)) {
-                throw new \InvalidArgumentException(get_class($possibleCipher).' has to implement '.SymmetricCipherInterface::class);
+                throw new \InvalidArgumentException($possibleCipher::class.' has to implement '.SymmetricCipherInterface::class);
             }
             if (!$possibleCipher->isSupported()) {
                 continue;
@@ -78,7 +78,7 @@ class EncryptionHelper
             }
             try {
                 return Serializer::decode($availableCipher->decrypt($encryptedMessage, $this->key, $initVector));
-            } catch (InvalidDecryptionException $ex) {
+            } catch (InvalidDecryptionException) {
             }
             $mainTried = true;
         }

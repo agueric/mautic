@@ -35,7 +35,7 @@ class CommonRepository extends ServiceEntityRepository
      */
     public function __construct(ManagerRegistry $registry, string $entityFQCN = null)
     {
-        parent::__construct($registry, $entityFQCN ?? str_replace('Repository', '', get_class($this)));
+        parent::__construct($registry, $entityFQCN ?? str_replace('Repository', '', static::class));
     }
 
     /**
@@ -96,10 +96,8 @@ class CommonRepository extends ServiceEntityRepository
      * Examines the arguments passed to getEntities and converts ORM properties to dBAL column names.
      *
      * @param string $entityClass
-     *
-     * @return array
      */
-    public function convertOrmProperties($entityClass, array $args)
+    public function convertOrmProperties($entityClass, array $args): array
     {
         $properties = $this->getBaseColumns($entityClass);
 
@@ -297,7 +295,7 @@ class CommonRepository extends ServiceEntityRepository
             $q->where($expr);
 
             $entity = $q->getQuery()->getSingleResult();
-        } catch (\Exception $exception) {
+        } catch (\Exception) {
             $entity = null;
         }
 
@@ -407,7 +405,7 @@ class CommonRepository extends ServiceEntityRepository
             } else {
                 $entity = $this->find((int) $id);
             }
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $entity = null;
         }
 
@@ -647,11 +645,7 @@ class CommonRepository extends ServiceEntityRepository
 
         $result = $q->executeQuery()->fetchAssociative();
 
-        if (isset($result[$column])) {
-            return $result[$column];
-        }
-
-        return null;
+        return $result[$column] ?? null;
     }
 
     /**
@@ -745,9 +739,9 @@ class CommonRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
-    public function getTableColumns()
+    public function getTableColumns(): array
     {
         $columns = $this->getClassMetadata()->getColumnNames();
 
@@ -934,11 +928,9 @@ class CommonRepository extends ServiceEntityRepository
      *
      * @param array $clause ['expr' => 'expression', 'col' => 'DB column', 'val' => 'value to search for']
      *
-     * @return array
-     *
      * @throws \InvalidArgumentException
      */
-    protected function validateWhereClause(array $clause)
+    protected function validateWhereClause(array $clause): array
     {
         $msg = '"%s" is missing in the where clause array.';
         if (empty($clause['expr'])) {
@@ -954,7 +946,7 @@ class CommonRepository extends ServiceEntityRepository
         }
 
         $clause['expr'] = $this->sanitize($clause['expr']);
-        $clause['col']  = $this->sanitize(isset($clause['column']) ? $clause['column'] : $clause['col'], ['_', '.']);
+        $clause['col']  = $this->sanitize($clause['column'] ?? $clause['col'], ['_', '.']);
         if (isset($clause['value'])) {
             $clause['val'] = $clause['value'];
         }

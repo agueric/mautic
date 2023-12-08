@@ -19,12 +19,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MonitoringType extends AbstractType
 {
-    /** @var MonitoringModel */
-    private $monitoringModel;
-
-    public function __construct(MonitoringModel $monitoringModel)
+    public function __construct(private MonitoringModel $monitoringModel)
     {
-        $this->monitoringModel = $monitoringModel;
     }
 
     /**
@@ -104,7 +100,7 @@ class MonitoringType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-                'data_class' => 'MauticPlugin\MauticSocialBundle\Entity\Monitoring',
+                'data_class' => \MauticPlugin\MauticSocialBundle\Entity\Monitoring::class,
             ]);
 
         // allow network types to be sent through - list

@@ -76,7 +76,7 @@ class CheckStep implements StepInterface
     /**
      * {@inheritdoc}
      */
-    public function checkRequirements()
+    public function checkRequirements(): array
     {
         $messages = [];
 
@@ -160,7 +160,7 @@ class CheckStep implements StepInterface
     /**
      * {@inheritdoc}
      */
-    public function checkOptionalSettings()
+    public function checkOptionalSettings(): array
     {
         $messages = [];
 
@@ -222,7 +222,7 @@ class CheckStep implements StepInterface
                 if (is_null(new \Collator('fr_FR'))) {
                     $messages[] = 'mautic.install.intl.config';
                 }
-            } catch (\Exception $exception) {
+            } catch (\Exception) {
                 $messages[] = 'mautic.install.intl.config';
             }
         }

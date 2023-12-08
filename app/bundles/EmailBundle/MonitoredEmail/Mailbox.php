@@ -191,7 +191,7 @@ class Mailbox
         if (null !== $bundleKey) {
             try {
                 $this->switchMailbox($bundleKey, $folderKey);
-            } catch (MailboxException $e) {
+            } catch (MailboxException) {
                 return false;
             }
         }
@@ -208,7 +208,7 @@ class Mailbox
      *
      * @throws MailboxException
      */
-    public function switchMailbox($bundle, $mailbox = '')
+    public function switchMailbox($bundle, $mailbox = ''): void
     {
         $key = $bundle.(!empty($mailbox) ? '_'.$mailbox : '');
 
@@ -507,7 +507,7 @@ class Mailbox
      *
      * @return array Mails ids
      */
-    public function searchMailbox($criteria = self::CRITERIA_ALL)
+    public function searchMailbox($criteria = self::CRITERIA_ALL): array
     {
         if (preg_match('/'.self::CRITERIA_UID.' ((\d+):(\d+|\*))/', $criteria, $matches)) {
             // PHP imap_search does not support UID n:* so use imap_fetch_overview instead
@@ -521,7 +521,7 @@ class Mailbox
             $mailIds = imap_search($this->getImapStream(), $criteria, SE_UID);
         }
 
-        return $mailIds ? $mailIds : [];
+        return $mailIds ?: [];
     }
 
     /**
@@ -723,8 +723,6 @@ class Mailbox
 
     /**
      * Get mails count in mail box.
-     *
-     * @return int
      */
     public function countMails(): int|bool
     {
@@ -935,14 +933,11 @@ class Mailbox
                     : '';
                 switch ($partStructure->type) {
                     case TYPETEXT:
-                        switch ($subtype) {
-                            case 'plain':
-                                $mail->textPlain .= $data;
-                                break;
-                            case 'html':
-                            default:
-                                $mail->textHtml .= $data;
-                        }
+                        match ($subtype) {
+                            'plain' => $mail->textPlain .= $data,
+                            // no break
+                            default => $mail->textHtml .= $data,
+                        };
                         break;
                     case TYPEMULTIPART:
                         if (

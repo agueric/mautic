@@ -155,7 +155,7 @@ class ImportModel extends FormModel
      * @throws ImportFailedException
      * @throws ImportDelayedException
      */
-    public function beginImport(Import $import, Progress $progress, $limit = 0)
+    public function beginImport(Import $import, Progress $progress, $limit = 0): void
     {
         $this->setGhostImportsAsFailed();
 
@@ -592,7 +592,7 @@ class ImportModel extends FormModel
      *
      * @throws \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
      */
-    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null)
+    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null): ?Event
     {
         if (!$entity instanceof Import) {
             throw new MethodNotAllowedHttpException(['Import']);

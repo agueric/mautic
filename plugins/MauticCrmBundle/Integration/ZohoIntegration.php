@@ -95,10 +95,7 @@ class ZohoIntegration extends CrmAbstractIntegration
         return !empty($featureSettings['datacenter']) ? $featureSettings['datacenter'] : 'zoho.com';
     }
 
-    /**
-     * @return string
-     */
-    public function getApiUrl()
+    public function getApiUrl(): string
     {
         return sprintf('https://accounts.%s', $this->getDatacenter());
     }
@@ -443,10 +440,8 @@ class ZohoIntegration extends CrmAbstractIntegration
      * @param string $query
      * @param array  $result
      * @param string $object
-     *
-     * @return int
      */
-    public function getLeads($params, $query, &$executed, $result = [], $object = 'Lead')
+    public function getLeads($params, $query, &$executed, $result = [], $object = 'Lead'): int
     {
         if ('Lead' === $object || 'Contact' === $object) {
             $object .= 's'; // pluralize object name for Zoho
@@ -519,10 +514,8 @@ class ZohoIntegration extends CrmAbstractIntegration
      * @param null  $query
      * @param null  $executed
      * @param array $result
-     *
-     * @return int|null
      */
-    public function getCompanies($params = [], $query = null, &$executed = null, &$result = [])
+    public function getCompanies($params = [], $query = null, &$executed = null, &$result = []): int
     {
         $executed = 0;
         $object   = 'company';
@@ -731,11 +724,11 @@ class ZohoIntegration extends CrmAbstractIntegration
     }
 
     /**
-     * @param array $settings
+     * @param mixed[] $settings
      *
-     * @return array|mixed
+     * @return mixed[]
      */
-    public function getFormLeadFields($settings = [])
+    public function getFormLeadFields($settings = []): array
     {
         $leadFields    = $this->getFormFieldsByObject('Leads', $settings);
         $contactFields = $this->getFormFieldsByObject('Contacts', $settings);
@@ -744,22 +737,20 @@ class ZohoIntegration extends CrmAbstractIntegration
     }
 
     /**
-     * @param array $settings
-     *
-     * @return array|bool
+     * @param mixed[] $settings
      *
      * @throws ApiErrorException
      */
-    public function getAvailableLeadFields($settings = [])
+    public function getAvailableLeadFields($settings = []): array
     {
         $zohoFields        = [];
-        $silenceExceptions = isset($settings['silence_exceptions']) ? $settings['silence_exceptions'] : true;
+        $silenceExceptions = $settings['silence_exceptions'] ?? true;
 
         if (isset($settings['feature_settings']['objects'])) {
             $zohoObjects = $settings['feature_settings']['objects'];
         } else {
             $settings    = $this->settings->getFeatureSettings();
-            $zohoObjects = isset($settings['objects']) ? $settings['objects'] : ['Leads'];
+            $zohoObjects = $settings['objects'] ?? ['Leads'];
         }
 
         try {
@@ -815,7 +806,7 @@ class ZohoIntegration extends CrmAbstractIntegration
                 throw $exception;
             }
 
-            return false;
+            return [];
         }
 
         return $zohoFields;
@@ -1150,11 +1141,9 @@ class ZohoIntegration extends CrmAbstractIntegration
      * @param string $zObject
      * @param bool   $createIntegrationEntity
      *
-     * @return int
-     *
      * @throws \MauticPlugin\MauticCrmBundle\Api\Zoho\Exception\MatchingKeyNotFoundException
      */
-    private function consumeResponse($response, $zObject, $createIntegrationEntity = false, Mapper $mapper = null)
+    private function consumeResponse($response, $zObject, $createIntegrationEntity = false, Mapper $mapper = null): int
     {
         $rows = $response;
         if (isset($rows['data'][0])) {
@@ -1218,10 +1207,7 @@ class ZohoIntegration extends CrmAbstractIntegration
         return $this->parseZohoRecord($records, array_merge($availableFields[$object], $idField));
     }
 
-    /**
-     * @return array
-     */
-    private function parseZohoRecord($data, $fields)
+    private function parseZohoRecord($data, $fields): array
     {
         $parsedData = [];
         if (empty($data['data'])) {
@@ -1304,7 +1290,7 @@ class ZohoIntegration extends CrmAbstractIntegration
 
         $objects = (!is_array($object)) ? [$object] : $object;
         if (is_string($object) && 'Accounts' === $object) {
-            return isset($fields['companyFields']) ? $fields['companyFields'] : $fields;
+            return $fields['companyFields'] ?? $fields;
         }
 
         if (isset($fields['leadFields'])) {

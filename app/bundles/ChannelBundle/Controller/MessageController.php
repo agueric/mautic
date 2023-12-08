@@ -20,6 +20,8 @@ use Mautic\LeadBundle\Controller\EntityContactsTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -85,9 +87,9 @@ class MessageController extends AbstractStandardFormController
     }
 
     /**
-     * @return mixed
+     * @return mixed[]
      */
-    protected function getViewArguments(array $args, $action)
+    protected function getViewArguments(array $args, $action): array
     {
         /** @var MessageModel $model */
         $model          = $this->getModel($this->getModelName());
@@ -119,7 +121,7 @@ class MessageController extends AbstractStandardFormController
                     ]
                 );
 
-                list($dateFrom, $dateTo) = $this->getViewDateRange($this->requestStack->getCurrentRequest(), $message->getId(), $returnUrl, 'local', $dateRangeForm);
+                [$dateFrom, $dateTo]     = $this->getViewDateRange($this->requestStack->getCurrentRequest(), $message->getId(), $returnUrl, 'local', $dateRangeForm);
                 $chart                   = new LineChart(null, $dateFrom, $dateTo);
 
                 /** @var Channel[] $channels */
@@ -199,10 +201,7 @@ class MessageController extends AbstractStandardFormController
         return '@MauticChannel/Message';
     }
 
-    /**
-     * @return \Symfony\Component\Form\FormView
-     */
-    protected function getFormView(Form $form, $view)
+    protected function getFormView(FormInterface $form, $view): FormView
     {
         return $form->createView();
     }
@@ -270,7 +269,7 @@ class MessageController extends AbstractStandardFormController
                     'objectId'     => $objectId,
                 ]
             );
-            list($dateFrom, $dateTo) = $this->getViewDateRange($request, $objectId, $returnUrl, 'UTC');
+            [$dateFrom, $dateTo] = $this->getViewDateRange($request, $objectId, $returnUrl, 'UTC');
 
             $filter = [
                 'channel' => $channel,
@@ -307,7 +306,7 @@ class MessageController extends AbstractStandardFormController
             ],
             null,
             [
-                'channel' => ($channel) ? $channel : 'all',
+                'channel' => $channel ?: 'all',
             ],
             '.message-'.$channel
         );

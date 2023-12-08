@@ -32,11 +32,9 @@ class ContactMerger
     }
 
     /**
-     * @return Lead
-     *
      * @throws SameContactException
      */
-    public function merge(Lead $winner, Lead $loser)
+    public function merge(Lead $winner, Lead $loser): Lead
     {
         if ($winner->getId() === $loser->getId()) {
             throw new SameContactException();
@@ -120,8 +118,8 @@ class ContactMerger
     public function mergeFieldData(Lead $winner, Lead $loser)
     {
         // Use the modified date if applicable or date added if the contact has never been edited
-        $loserDate  = ($loser->getDateModified()) ? $loser->getDateModified() : $loser->getDateAdded();
-        $winnerDate = ($winner->getDateModified()) ? $winner->getDateModified() : $winner->getDateAdded();
+        $loserDate  = $loser->getDateModified() ?: $loser->getDateAdded();
+        $winnerDate = $winner->getDateModified() ?: $winner->getDateAdded();
 
         // When it comes to data, keep the newest value regardless of the winner/loser
         $newest = ($loserDate > $winnerDate) ? $loser : $winner;

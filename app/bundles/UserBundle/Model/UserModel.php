@@ -118,7 +118,7 @@ class UserModel extends FormModel
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = [])
+    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = []): \Symfony\Component\Form\FormInterface
     {
         if (!$entity instanceof User) {
             throw new MethodNotAllowedHttpException(['User'], 'Entity must be of class User()');
@@ -171,7 +171,7 @@ class UserModel extends FormModel
      *
      * @throws \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
      */
-    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null)
+    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null): ?Event
     {
         if (!$entity instanceof User) {
             throw new MethodNotAllowedHttpException(['User'], 'Entity must be of class User()');
@@ -219,19 +219,13 @@ class UserModel extends FormModel
     public function getLookupResults($type, $filter = '', $limit = 10)
     {
         $results = [];
-        switch ($type) {
-            case 'role':
-                $results = $this->em->getRepository(Role::class)->getRoleList($filter, $limit);
-                break;
-            case 'user':
-                $results = $this->em->getRepository(User::class)->getUserList($filter, $limit);
-                break;
-            case 'position':
-                $results = $this->em->getRepository(User::class)->getPositionList($filter, $limit);
-                break;
-        }
 
-        return $results;
+        return match ($type) {
+            'role'     => $this->em->getRepository(Role::class)->getRoleList($filter, $limit),
+            'user'     => $this->em->getRepository(User::class)->getUserList($filter, $limit),
+            'position' => $this->em->getRepository(User::class)->getPositionList($filter, $limit),
+            default    => $results,
+        };
     }
 
     /**
@@ -279,7 +273,7 @@ class UserModel extends FormModel
     /**
      * @throws \RuntimeException
      */
-    public function sendResetEmail(User $user)
+    public function sendResetEmail(User $user): void
     {
         $mailer = $this->mailHelper->getMailer();
 
@@ -369,7 +363,7 @@ class UserModel extends FormModel
         }
         $preferences = $user->getPreferences();
 
-        return (isset($preferences[$key])) ? $preferences[$key] : $default;
+        return $preferences[$key] ?? $default;
     }
 
     /**

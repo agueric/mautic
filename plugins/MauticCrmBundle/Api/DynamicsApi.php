@@ -136,10 +136,8 @@ class DynamicsApi extends CrmApi
      * @param array  $data
      * @param string $object
      * @param bool   $isUpdate
-     *
-     * @return array
      */
-    public function createLeads($data, $object = 'contacts', $isUpdate = false)
+    public function createLeads($data, $object = 'contacts', $isUpdate = false): array
     {
         if (0 === count($data)) {
             return [];
@@ -221,10 +219,10 @@ class DynamicsApi extends CrmApi
         array_pop($a_blocks);
         // there is only one batchresponse
         $input                = array_pop($a_blocks);
-        list($header, $input) = explode("\r\n\r\n", $input, 2);
+        [$header, $input]     = explode("\r\n\r\n", $input, 2);
         foreach (explode("\r\n", $header) as $r) {
             if (0 === stripos($r, 'Content-Type:')) {
-                list($headername, $contentType) = explode(':', $r, 2);
+                [$headername, $contentType] = explode(':', $r, 2);
             }
         }
         // grab multipart boundary from content type header

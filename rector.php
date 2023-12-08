@@ -33,6 +33,8 @@ return static function (Rector\Config\RectorConfig $rectorConfig): void {
         ReturnTypeFromReturnDirectArrayRector::class => [
             // require bit test update
             __DIR__.'/app/bundles/LeadBundle/Model/LeadModel.php',
+            // array vs doctrine collection
+            __DIR__.'/app/bundles/CoreBundle/Entity/TranslationEntityTrait.php',
         ],
 
         // lets handle later, once we have more type declaratoins
@@ -59,11 +61,23 @@ return static function (Rector\Config\RectorConfig $rectorConfig): void {
         TypedPropertyFromStrictConstructorRector::class => [
             // entities magic
             __DIR__.'/app/bundles/LeadBundle/Entity',
+
+            // fixed in rector dev-main
+            __DIR__.'/app/bundles/CoreBundle/DependencyInjection/Builder/BundleMetadata.php',
         ],
 
         \Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector::class => [
             __DIR__.'/app/bundles/CacheBundle/EventListener/CacheClearSubscriber.php',
+            __DIR__.'/app/bundles/ReportBundle/Event/ReportBuilderEvent.php',
+            // false positive
+            __DIR__.'/app/bundles/CoreBundle/DependencyInjection/Builder/BundleMetadata.php',
         ],
+
+        // handle later with full PHP 8.0 upgrade
+        \Rector\Php80\Rector\FunctionLike\MixedTypeRector::class,
+        \Rector\TypeDeclaration\Rector\Property\TypedPropertyFromAssignsRector::class,
+        \Rector\Php73\Rector\FuncCall\JsonThrowOnErrorRector::class,
+        \Rector\CodeQuality\Rector\ClassMethod\OptionalParametersAfterRequiredRector::class,
 
         // handle later, case by case as lot of chnaged code
         \Rector\DeadCode\Rector\If_\RemoveAlwaysTrueIfConditionRector::class => [
@@ -107,11 +121,21 @@ return static function (Rector\Config\RectorConfig $rectorConfig): void {
         \Rector\Doctrine\Set\DoctrineSetList::DOCTRINE_ORM_25,
 
         \Rector\Set\ValueObject\SetList::DEAD_CODE,
+        \Rector\Set\ValueObject\LevelSetList::UP_TO_PHP_80,
     ]);
 
     // Define what single rules will be applied
     $rectorConfig->rules([
-        // \Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector::class,
+        \Rector\Php80\Rector\Switch_\ChangeSwitchToMatchRector::class,
+        \Rector\TypeDeclaration\Rector\ClassMethod\NumericReturnTypeFromStrictScalarReturnsRector::class,
+        \Rector\TypeDeclaration\Rector\ClassMethod\ReturnTypeFromReturnNewRector::class,
+        \Rector\TypeDeclaration\Rector\ClassMethod\ReturnTypeFromStrictNativeCallRector::class,
+        \Rector\TypeDeclaration\Rector\ClassMethod\ReturnTypeFromStrictNewArrayRector::class,
+        \Rector\TypeDeclaration\Rector\ClassMethod\ReturnTypeFromStrictParamRector::class,
+        \Rector\TypeDeclaration\Rector\Class_\ReturnTypeFromStrictTernaryRector::class,
+
+        // \Rector\Php80\Rector\Catch_\RemoveUnusedVariableInCatchRector::class,
+        \Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector::class,
         BoolReturnTypeFromStrictScalarReturnsRector::class,
         AddVoidReturnTypeWhereNoReturnRector::class,
         TypedPropertyFromStrictConstructorRector::class,
@@ -128,4 +152,6 @@ return static function (Rector\Config\RectorConfig $rectorConfig): void {
         \Rector\Php80\Rector\NotIdentical\StrContainsRector::class,
         \Rector\Php80\Rector\Identical\StrStartsWithRector::class,
     ]);
+
+    $rectorConfig->phpVersion(\Rector\Core\ValueObject\PhpVersion::PHP_80);
 };

@@ -31,7 +31,7 @@ class Reply implements ProcessorInterface
         try {
             $parser       = new Parser($message);
             $repliedEmail = $parser->parse();
-        } catch (ReplyNotFound $exception) {
+        } catch (ReplyNotFound) {
             // No hash found so bail as we won't consider this a reply
             $this->logger->debug('MONITORED EMAIL: No hash ID found in the email body');
 
@@ -71,7 +71,7 @@ class Reply implements ProcessorInterface
      * @param string $trackingHash
      * @param string $messageId
      */
-    public function createReplyByHash($trackingHash, $messageId)
+    public function createReplyByHash($trackingHash, $messageId): void
     {
         /** @var Stat|null $stat */
         $stat = $this->statRepo->findOneBy(['trackingHash' => $trackingHash]);
@@ -101,9 +101,7 @@ class Reply implements ProcessorInterface
     protected function createReply(Stat $stat, $messageId)
     {
         $replies = $stat->getReplies()->filter(
-            function (EmailReply $reply) use ($messageId): bool {
-                return $reply->getMessageId() === $messageId;
-            }
+            fn (EmailReply $reply): bool => $reply->getMessageId() === $messageId
         );
 
         if (!$replies->count()) {

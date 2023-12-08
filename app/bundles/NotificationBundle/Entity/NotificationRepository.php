@@ -58,7 +58,7 @@ class NotificationRepository extends CommonRepository
      */
     protected function addSearchCommandWhereClause($q, $filter): array
     {
-        list($expr, $parameters) = $this->addStandardSearchCommandWhereClause($q, $filter);
+        [$expr, $parameters] = $this->addStandardSearchCommandWhereClause($q, $filter);
         if ($expr) {
             return [$expr, $parameters];
         }
@@ -149,7 +149,7 @@ class NotificationRepository extends CommonRepository
                 ->where('id = '.(int) $id);
 
             $q->executeStatement();
-        } catch (\Exception $exception) {
+        } catch (\Exception) {
             // not important
         }
     }

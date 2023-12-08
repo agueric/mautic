@@ -300,7 +300,7 @@ class LeadModel extends FormModel
      *
      * @throws \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
      */
-    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = [])
+    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = []): \Symfony\Component\Form\FormInterface
     {
         if (!$entity instanceof Lead) {
             throw new MethodNotAllowedHttpException(['Lead'], 'Entity must be of class Lead()');
@@ -342,7 +342,7 @@ class LeadModel extends FormModel
      *
      * @throws \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
      */
-    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null)
+    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null): ?Event
     {
         if (!$entity instanceof Lead) {
             throw new MethodNotAllowedHttpException(['Lead'], 'Entity must be of class Lead()');
@@ -478,11 +478,9 @@ class LeadModel extends FormModel
      * @param bool|true  $fetchSocialProfiles
      * @param bool|false $bindWithForm        Send $data through the Lead form and only use valid data (should be used with request data)
      *
-     * @return array
-     *
      * @throws ImportFailedException
      */
-    public function setFieldValues(Lead $lead, array $data, $overwriteWithBlank = false, $fetchSocialProfiles = true, $bindWithForm = false)
+    public function setFieldValues(Lead $lead, array $data, $overwriteWithBlank = false, $fetchSocialProfiles = true, $bindWithForm = false): void
     {
         if ($fetchSocialProfiles) {
             // @todo - add a catch to NOT do social gleaning if a lead is created via a form, etc as we do not want the user to experience the wait
@@ -599,7 +597,7 @@ class LeadModel extends FormModel
                         $this->cleanFields($data, $field);
                     }
                     $curValue = $field['value'];
-                    $newValue = isset($data[$alias]) ? $data[$alias] : '';
+                    $newValue = $data[$alias] ?? '';
 
                     if (is_array($newValue)) {
                         $newValue = implode('|', $newValue);
@@ -982,7 +980,7 @@ class LeadModel extends FormModel
                 $data['lead_channels']['preferred_channel'] = $ch;
             }
 
-            $frequencyRule = (isset($frequencyRules[$ch])) ? $frequencyRules[$ch] : new FrequencyRule();
+            $frequencyRule = $frequencyRules[$ch] ?? new FrequencyRule();
             $frequencyRule->setChannel($ch);
             $frequencyRule->setLead($lead);
             $frequencyRule->setDateAdded(new \DateTime());
@@ -1149,7 +1147,7 @@ class LeadModel extends FormModel
             $lead = $this->getEntity($fieldData['id']);
         }
 
-        $lead   = $lead ?? $this->checkForDuplicateContact($fieldData);
+        $lead ??= $this->checkForDuplicateContact($fieldData);
         $merged = (bool) $lead->getId();
 
         if (!empty($fields['dateAdded']) && !empty($data[$fields['dateAdded']])) {
@@ -1289,7 +1287,7 @@ class LeadModel extends FormModel
                 $lead->setOwner($newOwner);
                 // reset default import owner if exists owner for contact
                 $owner = null;
-            } catch (NonUniqueResultException $exception) {
+            } catch (NonUniqueResultException) {
                 // user not found
             }
         }
@@ -1674,10 +1672,9 @@ class LeadModel extends FormModel
 
         // Remove companies that are not in the array of given companies
         $removeCompanies = $currentCompanies->reject(
-            function (array $company) use ($requestedCompanies) {
+            fn (array $company) =>
                 // Reject if the found company is still in the list of companies given
-                return $requestedCompanies->contains($company['company_id']);
-            }
+                $requestedCompanies->contains($company['company_id'])
         );
         if ($removeCompanies->count()) {
             $this->companyModel->removeLeadFromCompany($removeCompanies->keys()->toArray(), $lead);

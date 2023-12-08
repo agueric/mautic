@@ -431,7 +431,7 @@ class EmailRepository extends CommonRepository
      */
     protected function addSearchCommandWhereClause($q, $filter): array
     {
-        list($expr, $parameters) = $this->addStandardSearchCommandWhereClause($q, $filter);
+        [$expr, $parameters] = $this->addStandardSearchCommandWhereClause($q, $filter);
         if ($expr) {
             return [$expr, $parameters];
         }
@@ -540,7 +540,7 @@ class EmailRepository extends CommonRepository
      * @param int        $increaseBy
      * @param bool|false $variant
      */
-    public function upCount($id, $type = 'sent', $increaseBy = 1, $variant = false)
+    public function upCount($id, $type = 'sent', $increaseBy = 1, $variant = false): void
     {
         if (!$increaseBy) {
             return;
@@ -680,10 +680,8 @@ class EmailRepository extends CommonRepository
      * @param string $column
      * @param int    $minContactId
      * @param int    $maxContactId
-     *
-     * @return QueryBuilder
      */
-    private function setMinMaxIds(QueryBuilder $q, $column, $minContactId, $maxContactId)
+    private function setMinMaxIds(QueryBuilder $q, $column, $minContactId, $maxContactId): QueryBuilder
     {
         if ($minContactId && is_numeric($minContactId)) {
             $q->andWhere($column.' >= :minContactId');

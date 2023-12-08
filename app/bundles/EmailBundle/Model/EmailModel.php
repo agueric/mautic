@@ -268,7 +268,7 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = [])
+    public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = []): FormInterface
     {
         if (!$entity instanceof Email) {
             throw new MethodNotAllowedHttpException(['Email']);
@@ -330,7 +330,7 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
     /**
      * @throws \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
      */
-    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null)
+    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null): ?Event
     {
         if (!$entity instanceof Email) {
             throw new MethodNotAllowedHttpException(['Email']);
@@ -543,7 +543,7 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
                 'contact_id'    => $stat['lead_id'],
                 'contact_email' => $stat['email_address'],
                 'open'          => $stat['is_read'],
-                'click'         => (null !== $stat['link_hits']) ? $stat['link_hits'] : 0,
+                'click'         => $stat['link_hits'] ?? 0,
                 'links_clicked' => [],
                 'email_id'      => (string) $stat['email_id'],
                 'email_name'    => (string) $stat['email_name'],
@@ -670,12 +670,12 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
             $bouncedCounts      = $dncRepo->getCount('email', $emailIds, DoNotContact::BOUNCED, $lists->getKeys(), $query);
 
             foreach ($lists as $l) {
-                $sentCount         = isset($sentCounts[$l->getId()]) ? $sentCounts[$l->getId()] : 0;
-                $readCount         = isset($readCounts[$l->getId()]) ? $readCounts[$l->getId()] : 0;
-                $failedCount       = isset($failedCounts[$l->getId()]) ? $failedCounts[$l->getId()] : 0;
-                $clickCount        = isset($clickCounts[$l->getId()]) ? $clickCounts[$l->getId()] : 0;
-                $unsubscribedCount = isset($unsubscribedCounts[$l->getId()]) ? $unsubscribedCounts[$l->getId()] : 0;
-                $bouncedCount      = isset($bouncedCounts[$l->getId()]) ? $bouncedCounts[$l->getId()] : 0;
+                $sentCount         = $sentCounts[$l->getId()] ?? 0;
+                $readCount         = $readCounts[$l->getId()] ?? 0;
+                $failedCount       = $failedCounts[$l->getId()] ?? 0;
+                $clickCount        = $clickCounts[$l->getId()] ?? 0;
+                $unsubscribedCount = $unsubscribedCounts[$l->getId()] ?? 0;
+                $bouncedCount      = $bouncedCounts[$l->getId()] ?? 0;
 
                 $chart->setDataset(
                     $l->getName(),
@@ -1299,7 +1299,7 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
         $errors              = [];
 
         if (empty($channel)) {
-            $channel = (isset($options['source'])) ? $options['source'] : [];
+            $channel = $options['source'] ?? [];
         }
 
         if (!$email->getId()) {
@@ -1445,7 +1445,7 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
                         if (!empty($emailSettings[$parentId]['isVariant'])) {
                             ++$emailSettings[$parentId]['variantCount'];
                         }
-                    } catch (FailedToSendToContactException $exception) {
+                    } catch (FailedToSendToContactException) {
                         // move along to the next contact
                     }
                 }
@@ -1986,7 +1986,7 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
 
         foreach ($deviceStats as $device) {
             $chart->setDataset(
-                ($device['device']) ? $device['device'] : $this->translator->trans('mautic.core.unknown'),
+                $device['device'] ?: $this->translator->trans('mautic.core.unknown'),
                 $device['count']
             );
         }

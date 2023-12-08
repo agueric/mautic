@@ -37,7 +37,7 @@ class FeedbackLoop implements ProcessorInterface
                 // A contact email was not found in the FBL report
                 return false;
             }
-        } catch (FeedbackLoopNotFound $exception) {
+        } catch (FeedbackLoopNotFound) {
             return false;
         }
 
@@ -56,9 +56,6 @@ class FeedbackLoop implements ProcessorInterface
         return true;
     }
 
-    /**
-     * @return int
-     */
     protected function isApplicable(): int|bool
     {
         return preg_match('/.*feedback-type: abuse.*/is', $this->message->fblReport);

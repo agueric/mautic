@@ -426,7 +426,7 @@ class DashboardController extends AbstractFormController
 
             $filter = $model->getDefaultFilter();
             foreach ($widgets as $widget) {
-                $widget = $model->populateWidgetEntity($widget, $filter);
+                $widget = $model->populateWidgetEntity($widget);
                 $model->saveEntity($widget);
             }
         }
@@ -505,17 +505,15 @@ class DashboardController extends AbstractFormController
                 // Check for name, description, etc
                 $tempDashboard[$dashboard] = [
                     'type'        => $type,
-                    'name'        => (isset($config['name'])) ? $config['name'] : $dashboard,
-                    'description' => (isset($config['description'])) ? $config['description'] : '',
-                    'widgets'     => (isset($config['widgets'])) ? $config['widgets'] : $config,
+                    'name'        => $config['name'] ?? $dashboard,
+                    'description' => $config['description'] ?? '',
+                    'widgets'     => $config['widgets'] ?? $config,
                 ];
             }
 
             // Sort by name
             uasort($tempDashboard,
-                function ($a, $b): int {
-                    return strnatcasecmp($a['name'], $b['name']);
-                }
+                fn ($a, $b): int => strnatcasecmp($a['name'], $b['name'])
             );
 
             $dashboards = array_merge(

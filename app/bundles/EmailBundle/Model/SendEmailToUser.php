@@ -29,7 +29,7 @@ class SendEmailToUser
      * @throws EmailCouldNotBeSentException
      * @throws ORMException
      */
-    public function sendEmailToUsers(array $config, Lead $lead)
+    public function sendEmailToUsers(array $config, Lead $lead): void
     {
         $emailToUserAccessor = new EmailToUserAccessor($config);
 
@@ -70,12 +70,12 @@ class SendEmailToUser
         return function (string $emailAddressOrToken) use ($lead): string {
             try {
                 $contactFieldToken = new ContactFieldToken($emailAddressOrToken);
-            } catch (InvalidContactFieldTokenException $e) {
+            } catch (InvalidContactFieldTokenException) {
                 try {
                     $this->emailValidator->validate($emailAddressOrToken);
 
                     return $emailAddressOrToken;
-                } catch (InvalidEmailException $e) {
+                } catch (InvalidEmailException) {
                     return '';
                 }
             }
@@ -87,7 +87,7 @@ class SendEmailToUser
                 $this->customFieldValidator->validateFieldType($contactFieldToken->getFieldAlias(), 'email');
 
                 return $this->replaceToken($contactFieldToken->getFullToken(), $lead);
-            } catch (InvalidValueException|RecordException $e) {
+            } catch (InvalidValueException|RecordException) {
                 // If the field does not exist or is not type of email then use the default value.
                 return (string) $contactFieldToken->getDefaultValue();
             }
